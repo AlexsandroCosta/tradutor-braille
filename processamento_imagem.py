@@ -1,6 +1,6 @@
 import cv2
 import numpy
-from typing import Optional
+import math
 
 class ProcessadorImagem:
     def __init__(self, caminho_imagem: str):
@@ -16,7 +16,10 @@ class ProcessadorImagem:
         return imagem
 
     def processar_imagem(self) -> numpy.ndarray:
+        # Conversão para escala de cinza
         imagem_cinza = cv2.cvtColor(self.imagem_original, cv2.COLOR_BGR2GRAY)
+
+        # Correção de gamma (ajuste de brilho/contraste)
         imagem_cinza = self._correcao_gamma(imagem_cinza)
 
         # Aplicação do CLAHE (Equalização Adaptativa de Histograma) para melhorar o contraste local da imagem.
@@ -31,6 +34,7 @@ class ProcessadorImagem:
         imagem_suavizada = cv2.medianBlur(imagem_cinza, 3)
         imagem_suavizada = cv2.GaussianBlur(imagem_suavizada, (5, 5), 0)
 
+        # Limiarização adaptativa (para destacar pontos)
         imagem_binaria = cv2.adaptiveThreshold(
             imagem_suavizada, 255,
             cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
@@ -39,10 +43,6 @@ class ProcessadorImagem:
         )
 
         # Operações morfológicas: erosão para separar pontos conectados e dilatação para recuperar forma
-        # kernel = numpy.ones(
-        #     (3, 3),
-        #     numpy.uint8
-        # )
         kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2, 2))
         imagem_erodida = cv2.erode(imagem_binaria, kernel, iterations=1)
         imagem_processada = cv2.dilate(imagem_erodida, kernel, iterations=1)
@@ -54,11 +54,19 @@ class ProcessadorImagem:
 
         return imagem_processada
 
-    def _correcao_gamma(self, imagem: numpy.ndarray, gamma: float = 1.0) -> numpy.ndarray:
+    def _correcao_gamma(self, imagem: numpy.ndarray) -> numpy.ndarray:
+        gamma = self._calcular_gamma(imagem)
+        
         inversor_gamma = 1.0/gamma
         tabela = numpy.array([((i/255.0)**inversor_gamma) * 255 for i in numpy.arange(0, 256)]).astype('uint8')
         
         return cv2.LUT(imagem, tabela)
+    
+    def _calcular_gamma(self, imagem:numpy.ndarray) -> float:
+        brilho_medio = numpy.mean(imagem)
+        gamma = math.log(0.5) / math.log(brilho_medio/255) if brilho_medio > 0 else 1
+
+        return max(0.5, min(gamma, 3.0))
     
     def _remover_ruido(self, imagem:numpy.ndarray) -> numpy.ndarray:
         # Inverter a imagem para connectedComponents funcionar corretamente
