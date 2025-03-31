@@ -2,6 +2,9 @@ from processamento_imagem import ProcessadorImagem
 import cv2
 
 if __name__ == "__main__":
-    processador = ProcessadorImagem("1.jpg")
+    imagens = ['1.jpg', '3.png', '5.webp', '6.jpg']
 
-    processador.mostrar_resultados()
+    for imagem in imagens:
+        processador = ProcessadorImagem(imagem)
+
+        processador.mostrar_resultados()
