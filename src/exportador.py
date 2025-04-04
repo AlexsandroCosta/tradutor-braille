@@ -2,9 +2,10 @@ from pathlib import Path
 from docx import Document
 from typing import Literal
 from reportlab.lib.pagesizes import A4
-from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
 
 pdfmetrics.registerFont(TTFont('DejaVuSans', 'fontes/DejaVuSans.ttf'))
 
@@ -29,22 +30,26 @@ class Exportador:
         
     def exportar_pdf(self, texto: str, caminho_saida: str):
         try:
-            c = canvas.Canvas(str(caminho_saida), pagesize=A4)
-            c.setFont('DejaVuSans', 12)
+            doc = SimpleDocTemplate(str(caminho_saida), pagesize=A4,
+                                    leftMargin=50, rightMargin=50,
+                                    topMargin=50, bottomMargin=50)
             
-            _, altura = A4
-
-            x = 50
-            y = altura - 50
+            styles = getSampleStyleSheet()
+            style = ParagraphStyle(
+                'Normal',
+                parent=styles['Normal'],
+                fontName='DejaVuSans',
+                fontSize=12,
+                leading=15
+            )
+            
+            story = []
             for linha in texto.split('\n'):
-                c.drawString(x, y, linha)
-                y -= 15
-
-                if y < 50:
-                    c.showPage()
-                    y = altura - 50
-
-            c.save()
+                p = Paragraph(linha, style)
+                story.append(p)
+                story.append(Spacer(1, 12))
+            
+            doc.build(story)
         except Exception as e:
             raise IOError(f'Erro ao exportar PDF: {str(e)}')
         

@@ -5,6 +5,7 @@ import mimetypes
 import fitz
 from .mapa_braille import mapa_braille
 from docx import Document
+import re
 
 class TradutoTexto:
     def __init__(self, caminho_arquivo: str):
@@ -83,7 +84,12 @@ class TradutoTexto:
         traducao = []
 
         try:
-            for linha in self.texto_extraido.lower():
+            # Remove hifens no final de linha (junção de palavras quebradas)
+            texto = self.texto_extraido.lower().replace('-\n', '')
+            # Substitui \n seguido de caractere (exceto \n) por " " + caractere
+            texto_tratado = re.sub(r'\n([^\n])', r' \1', texto)
+
+            for linha in texto_tratado:
                 for letra in linha:
                         traducao.append(mapa_braille.get(letra, ''))
 
