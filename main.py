@@ -1,6 +1,6 @@
-from processamento_imagem import ProcessadorImagem
-from tradutor_texto import TradutoTexto
-import cv2
+from src.processamento_imagem import ProcessadorImagem
+from src.tradutor_texto import TradutoTexto
+from src.exportador import Exportador
 
 if __name__ == "__main__":
  
@@ -9,5 +9,7 @@ if __name__ == "__main__":
 
     #     processador.mostrar_resultados()
 
-    trautor_texto = TradutoTexto('imagens_texto/download.png')
-    print(trautor_texto.traduzir_para_braille())
+    trautor_texto = TradutoTexto('teste.docx')
+    exportador = Exportador()
+
+    exportador.exportar(trautor_texto.traducao_braille, 'teste.pdf', 'pdf')
