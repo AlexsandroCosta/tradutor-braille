@@ -9,7 +9,7 @@ if __name__ == "__main__":
 
     #     processador.mostrar_resultados()
 
-    trautor_texto = TradutoTexto('teste.docx')
+    trautor_texto = TradutoTexto('media/imagens/texto/download.png')
     exportador = Exportador()
 
-    exportador.exportar(trautor_texto.traducao_braille, 'teste.pdf', 'pdf')
+    exportador.exportar(trautor_texto.texto_extraido, 'teste','txt')

@@ -3,7 +3,7 @@ import numpy
 import cv2
 import mimetypes
 import fitz
-from mapa_braille import mapa_braille
+from .mapa_braille import mapa_braille
 from docx import Document
 
 class TradutoTexto:
