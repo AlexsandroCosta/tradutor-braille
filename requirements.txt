@@ -1,6 +1,11 @@
+chardet==5.2.0
+lxml==5.3.1
 numpy==2.2.4
 opencv-python==4.11.0.86
 packaging==24.2
 pillow==11.1.0
 PyMuPDF==1.25.5
 pytesseract==0.3.13
+python-docx==1.1.2
+reportlab==4.3.1
+typing_extensions==4.13.1
