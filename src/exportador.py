@@ -6,6 +6,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
+import re
 
 pdfmetrics.registerFont(TTFont('DejaVuSans', 'fontes/DejaVuSans.ttf'))
 
@@ -34,20 +35,29 @@ class Exportador:
                                     leftMargin=50, rightMargin=50,
                                     topMargin=50, bottomMargin=50)
             
+            nome_fonte = 'DejaVuSans'
+            espacamento = 12
+
+            # verificar se o texto contém pelo menos uma letra do alfabeto
+            if re.search(r'[a-zA-Z]', texto):
+                nome_fonte = 'Helvetica'
+                espacamento = 1.5
+    
             styles = getSampleStyleSheet()
             style = ParagraphStyle(
                 'Normal',
                 parent=styles['Normal'],
-                fontName='DejaVuSans',
+                fontName=nome_fonte,
                 fontSize=12,
-                leading=15
+                leading=15,
+                spaceAfter=6
             )
             
             story = []
             for linha in texto.split('\n'):
                 p = Paragraph(linha, style)
                 story.append(p)
-                story.append(Spacer(1, 12))
+                story.append(Spacer(1, espacamento))
             
             doc.build(story)
         except Exception as e:
